@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Wheel Spinner Game</title>
+    <link rel="stylesheet" href="design.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  </head>
+  <body>
+    <div class="background"></div>
+    <div class="dim-overlay"></div>
+<div class="div">
+  <div class="left-side">
+    <div class="cards cards-appear" id="cards-id">
+      <button class="card-button cards-appear" id="card-button-id" onclick="startTimer(); startGame()"><img src="pics/carddeck.jpg" alt="" class="carddeck-img"></button> 
+      <p>KÁRTYA FELHÚZÁSA</p>
+    </div>
+    <div class="groups">
+      <div class="group-left">
+        <div class="csapat">
+          <input type="text" name="" id="csapat0" class="csapatnev-input" required>
+          <label for="csapatnev-input" class="csapat-label">1. csapat</label>
+          <div class="group-point" id="team0">0 pont</div>
+        </div>
+        <div class="csapat">
+          <input type="text" name="" id="csapat1" class="csapatnev-input" required>
+          <label for="csapatnev-input" class="csapat-label">2. csapat</label>
+          <div class="group-point" id="team1">0 pont</div>
+        </div>
+        <div class="csapat">
+          <input type="text" name="" id="csapat2" class="csapatnev-input" required>
+          <label for="csapatnev-input" class="csapat-label">3. csapat</label>
+          <div class="group-point" id="team2">0 pont</div>
+        </div>
+      </div>
+
+
+      <div class="group-right">
+        <div class="csapat">
+          <input type="text" name="" id="csapat3" class="csapatnev-input" required>
+          <label for="csapatnev-input" class="csapat-label" >4. csapat</label>
+          <div class="group-point" id="team3">0 pont</div>
+        </div>
+        <div class="csapat">
+          <input type="text" name="" id="csapat4" class="csapatnev-input" required>
+          <label for="csapatnev-input" class="csapat-label">5. csapat</label>
+          <div class="group-point" id="team4">0 pont</div>
+        </div>
+        <div class="csapat">
+          <input type="text" name="" id="csapat5" class="csapatnev-input" required>
+          <label for="csapatnev-input" class="csapat-label">6. csapat</label>
+          <div class="group-point" id="team5">0 pont</div>
+        </div>
+      </div>
+      
+      
+    </div>
+  </div>
+  <div class="right-side">
+
+    <div class="wheel">
+      <div class="wheel__inner">
+        <div class="wheel__sec">
+          <span class="wheel-sec-span">DUPLA PONT</span>
+        </div>
+        <div class="wheel__sec">
+          <span class="wheel-sec-span2">KIMARADSZ A KÖRBŐL</span>
+        </div>
+        <div class="wheel__sec"><span class="wheel-sec-span">SEMMI</span></div>
+        <div class="wheel__sec">
+          <span class="wheel-sec-span">-10 PONT</span>
+        </div>
+        <div class="wheel__sec">
+          <span class="wheel-sec-span3">PÖRGESS MÉGEGYSZER</span>
+        </div>
+        <div class="wheel__sec">
+          <span class="wheel-sec-span2">KÖVETKEZŐ KIMARAD</span>
+        </div>
+        <div class="wheel__sec">
+          <span class="wheel-sec-span">+10 PONT</span>
+        </div>
+        <div class="wheel__sec">
+          <span class="wheel-sec-span">+3 PONT</span>
+        </div>
+      </div>  
+      <div class="wheel__arrow">
+        <button class="wheel__button">SPIN</button>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row text-center">
+        <div id="progressBar">
+          <div></div>
+        </div>
+        <div class="second-countdown">
+          <ul id="countdown">
+            <li><span id="second" class="numbers">20 másodperc</span>
+          </ul>
+        </div>
+          
+  
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="popup">
+      <div class="popup__container">
+        <div class="popup__emotion">
+          <i class="fas fa-meh"></i>
+        </div>
+        <p class="popup__note"></p>
+      </div>
+    </div>
+    <div class="congratulation">
+      <div class="congratulation__container">
+        <p class="congratulation__note">Congratulation!</p>
+      </div>
+    </div>
+  </div>
+  </div>
+    <script>
+      let questionHTML;
+      let spinned = false;
+      let spinagain = false;
+      let alreadySpinned = false;
+      document.getElementById(`csapat0`).classList.add("playingTeam")
+      
+
+      $(document).ready(function () {
+        var value = 0;  
+        var countClicked = 0;
+        var clicked = false;
+        spinagain = false;
+        function getPosition(position) {
+          if (position <= 22.5) {
+            $(".congratulation__note").text("DUPLA PONT");
+            BONUSduplapont()
+          } else if (position <= 67.5) {
+            $(".congratulation__note").text("+3 PONT");
+            BONUSpluszegy()
+          } else if (position <= 112.5) {
+            $(".congratulation__note").text("+10 PONT");
+            BONUSplusztiz()
+          } else if (position <= 157.5) {
+            $(".congratulation__note").text("A KÖVETKEZŐ CSAPAT KIMARAD");
+            BONUSkovetkezokimarad()
+          } else if (position <= 202.5) {
+            $(".congratulation__note").text("PÖRGESS MÉGEGYSZER");
+            BONUSporgessmegegyszer()
+          } else if (position <= 247.5) {
+            $(".congratulation__note").text("-10 PONT");
+            BONUSminusztiz()
+          } else if (position <= 292.5) {
+            $(".congratulation__note").text("SEMMI SEM TÖRTÉNIK");
+          } else if (position <= 337.5) {
+            $(".congratulation__note").text("KIMARADSZ A KÖRBŐL");
+            BONUSkimaradszakorbol()
+          } else {
+            $(".congratulation__note").text("DUPLA PONT");
+            BONUSduplapont()
+          }
+          $(".popup").removeClass("active");
+          $(".congratulation").fadeIn();  
+          clicked = false;
+          alreadySpinned = true
+          countClicked = 0;
+          if(!spinagain){
+          spinned = true;
+          } else{
+          spinagain = false;
+          alreadySpinned = false
+          }
+        
+        }
+        $(".wheel__button").click(function () {
+          if (alreadySpinned){
+            $(".popup__note").text("Már megpörgetted a kereket.")
+            if (!$(".popup").hasClass("active")) $(".popup").addClass("active");
+            setTimeout(() => {
+              $(".popup").removeClass("active")
+            }, 2000);
+            alreadySpinned = false;
+          }else{
+           if (clicked == true) {
+            countClicked++;
+            $(".popup__note").text("Már pörög a kerék")
+            if (!$(".popup").hasClass("active")) $(".popup").addClass("active");
+          } else {
+            let random = Math.floor(Math.random() * 360 + 720);
+            value += random;
+            console.log(random % 360);
+            console.log(value % 360);
+            $(".wheel__inner").css("transform", `rotate(${value}deg)`);
+            setTimeout(() => {
+              getPosition(value % 360);
+            }, 5000);
+          }
+          clicked = true;
+        }});
+        $(".congratulation__close").click(function () {
+          $(".congratulation").fadeOut();
+        });
+        $(".congratulation").click(function (event) {
+          if (event.target != this) return;
+          $(this).fadeOut();
+        });
+      
+      });
+
+
+var x;
+var totalTime = 21;
+var timeoutID;
+
+
+function startTimer(){
+
+  if(spinned === false){
+    $(".popup__note").text("Először pörgess")
+    if (!$(".popup").hasClass("active")) $(".popup").addClass("active");
+    setTimeout(() => {
+      $(".popup").removeClass("active")
+    }, 3000);
+  }else{
+
+// Countdown Timer
+var deadline = new Date(Date.now() + totalTime * 1000);
+
+   x = setInterval(function() {
+    var now = Date.now();
+    var t = deadline - now;
+    var seconds = Math.floor((t % (1000 * 60)) / 1000);
+    document.getElementById("second").innerHTML = `${seconds} másodperc`;
+    if (t < 0) {
+        clearInterval(x);
+        document.getElementById("second").innerHTML = 'Lejárt az idő';
+        $('#progressBar div').css('width', '0%')
+        $(".congratulation__note").text("LEJÁRT AZ IDŐ");
+        $(".popup").removeClass("active");
+        $(".congratulation").fadeIn();
+        timesUp()
+    }
+}, 1000);
+
+
+progress(20, 20, $('#progressBar'));
+  }
+}
+
+function progress(timeleft, timetotal, $element) {
+    var progressBarWidth = timeleft * $element.width() / 20 ;
+    $element.find('div').animate({ width: progressBarWidth }, timeleft == timetotal ? 0 : 1000, 'linear');
+    if (timeleft > 0) {
+        timeoutID = setTimeout(function() {
+            progress(timeleft-1 , 20, $element);
+        }, 1000);
+    }
+    else{
+      $element.find('div').css('width', '0%');
+    }
+} 
+
+function resetTimer() {
+    clearInterval(x);
+    clearTimeout(timeoutID)
+    document.getElementById("second").innerHTML = '20 másodperc';
+    $('#progressBar div').stop(true, true).css('width', '100%'); 
+    $(".congratulation").fadeOut();
+}
+
+
+
+
+let cards = [
+  {
+    question: `Bármely két derékszögű háromszög hasonló.`,  
+    answers:{
+    badanswer1: 'Igaz',
+    badanswer2: 'Tanár úr majd megoldja',
+    badanswer3: 'Nem létezik két hasonló háromszög',
+    goodanswer: 'Hamis'
+  }
+  },
+  {
+    question: 'Bármely két szabályos hatszög hasonló',  
+    answers:{
+    badanswer1: 'Csak akkor hogyha szögük nagysága egyenlő',
+    badanswer2: 'Soha',
+    badanswer3: 'Csak akkor hogyha oldaluk hossza egyenlő',
+    goodanswer: 'Mindig'
+  }
+  },
+  {
+    question: 'Két négyszög hasonló, ha szögeik páronként egyenlőek.',  
+    answers:{
+    badanswer1: 'Igaz',
+    badanswer2: 'Nem létezik két hasonló négyszög',
+    badanswer3: 'Ötletem sincs',
+    goodanswer: 'Csak akkor hogyha ugyanolyan négyszögről beszélünk'
+  }
+  },
+  {
+    question: 'Bármely két kör hasonló',  
+    answers:{
+    badanswer1: 'Hamis',
+    badanswer2: 'Kövi kérdés',
+    badanswer3: 'Csak hogyha szögeik is megegyeznek',
+    goodanswer: 'Igaz'
+  }
+  },
+  {
+    question: 'Melyik feltételnél nem lesz hasonló két háromszög?',  
+    answers:{
+    badanswer1: 'oldalaik hossza páronként egyenlő',
+    badanswer2: 'egy-egy oldaluk hossza és a rajtuk fekvő két szögük páronként egyenlő',
+    badanswer3: 'két-két oldaluk hossza páronként egyenlő, és általuk bezárt szögek egyenlők',
+    goodanswer: 'egy-egy szöge páronként egyenlő'
+  }
+  },
+  {
+    question: 'Mekkora egy derékszögű háromszög átfogója, ha befogói: 3 és 4',  
+    answers:{
+    badanswer1: '4,54',
+    badanswer2: '6',
+    badanswer3: 'pi',
+    goodanswer: '5'
+  }
+  },
+  {
+    question: 'Ha egy négyzetet felére kicsinyítünk, a területe negyedére csökken',  
+    answers:{
+    badanswer1: 'Hamis',
+    badanswer2: 'Nem létezik matematikában kicsinyítés',
+    badanswer3: 'Nem, mivel a területe nyolcad akkora lesz',
+    goodanswer: 'Igaz'
+  }
+  },
+  {
+    question: 'Két háromszög mikor biztosan nem hasonló?',
+    answers: {
+      badanswer1: 'Ha három oldaluk hossza arányos',
+      badanswer2: 'Ha két szögük és az egyik oldaluk arányos',
+      badanswer3: 'Ha két oldaluk és a közrezárt szögük arányos',
+      goodanswer: 'Ha egy szögük és két oldaluk arányos'
+    }
+  },
+  {
+    question: 'Egy négyzet lehet hasonló egy téglalaphoz',  
+    answers:{
+    badanswer1: 'Csak akkor hogyha egy-egy szögük egyenlő nagyságú',
+    badanswer2: 'Hamis',
+    badanswer3: 'Hagyjál már ezekkel a kérdésekkel',
+    goodanswer: 'Igaz'
+  }
+  },
+  {
+    question: 'Hasonló alakzatok megfelelő szögei egyenlőek',  
+    answers:{
+    badanswer1: 'Hamis',
+    badanswer2: 'Nem, mivel csak az oldalaik egyenlőek',
+    badanswer3: 'Sigma',
+    goodanswer: 'Igaz'
+  }
+  },
+  {
+    question: 'Két kocka mikor hasonló?',
+    answers: {
+      badanswer1: 'Ha csak térfogatuk aránya megegyezik',
+      badanswer2: 'Ha csak felületük aránya megegyezik',
+      badanswer3: 'Ha csak átlóik aránya megegyezik',
+      goodanswer: 'Ha élhosszaik aránya megegyezik'
+    }
+  },
+  {
+    question: 'Ha egy háromszöget kétszeresére nagyítunk, a kerülete négyszeresére nő',  
+    answers:{
+    badanswer1: 'Igaz',
+    badanswer2: 'Nem, mivel a szögei nőnek négyszeresre',
+    badanswer3: 'Nem változik a kerülete',
+    goodanswer: 'Nem, mivel a kerülete kétszeresére nő'
+  }
+  },
+  {
+    question: 'Egy négyzet és egy téglalap minden esetben hasonló egymáshoz',  
+    answers:{
+    badanswer1: 'Igaz',
+    badanswer2: 'Akkor, hogyha kettő szögük megegyezik',
+    badanswer3: 'Soha nem hasonló egy négyzet és egy téglalap',
+    goodanswer: 'Akkor, hogyha oldalaik hossza páronként egyenlő'
+  }
+  },
+  {
+    question: 'Két hasáb mikor hasonló?',
+    answers: {
+      badanswer1: 'Ha az oldalaik megegyeznek',
+      badanswer2: 'Ha alapjuk egyenlő és magasságuk különböző',
+      badanswer3: 'Ha alapjuk különböző sokszög',
+      goodanswer: 'Ha alapjuk hasonló sokszög és magasságuk aránya is egyenlő'
+    }
+  },
+  {
+    question: 'Ha két háromszög hasonló, és az egyik egyenlőszárú, akkor a másik is az',  
+    answers:{
+    badanswer1: 'Hamis',
+    badanswer2: 'Csak akkor, hogyha az egyik szögük is megegyezik',
+    badanswer3: 'TikTok Rizz Party',
+    goodanswer: 'Igaz'
+  }
+  },
+  {
+    question: 'Ha egy négyzetet ötödére kicsínyítjük, a területe is ötödére csökken',  
+    answers:{
+    badanswer1: 'Igaz',
+    badanswer2: 'Ez csak a háromszögeknél teljesül',
+    badanswer3: 'A szögei csökkennek az ötödére',
+    goodanswer: 'Hamis'
+  }
+  },
+  {
+    question: 'Két téglalap mikor hasonló?',
+    answers: {
+      badanswer1: 'Ha minden szögük aránya egyenlő',
+      badanswer2: 'Ha csak egy-egy oldaluk hossza megegyezik',
+      badanswer3: 'Ha csak a szemközti oldalaik aránya egyenlő',
+      goodanswer: 'Ha minden oldaluk aránya egyenlő'
+    }
+  },
+  {
+    question: 'Egy derékszögű háromszög átfogója 13 cm. Mekkorák lehetnek a befogók?',  
+    answers:{
+    badanswer1: '6 és 10',
+    badanswer2: 'Nincsen neki befogói',
+    badanswer3: 'Végtelensok féle',
+    goodanswer: '5 és 12'
+  }
+  },
+  {
+    question: 'Egy egyenes és egy körív lehet hasonló',  
+    answers:{
+    badanswer1: 'Igaz',
+    badanswer2: 'Soha, kivéve pár különleges esetben',
+    badanswer3: 'Csak akkor, hogyha a kör sugara és az egyenes hossza megegyezik',
+    goodanswer: 'Hamis'
+  }
+  },
+  {
+    question: 'Két háromszög hasonló, ha két-két szögük páronként egyenlő nagyságú.',  
+    answers:{
+    badanswer1: 'Hamis',
+    badanswer2: 'Fortnite better',
+    badanswer3: 'Csak akkor, hogyha a harmadik szög 90°',
+    goodanswer: 'Igaz'
+  }
+  },
+  {
+    question: 'Ha egy háromszöget háromszorosára nagyítunk, szögei is háromszor akkorák lesznek',  
+    answers:{
+    badanswer1: 'Nem, mivel háromszor kisebbek lesznek a szögei',
+    badanswer2: 'Igaz',
+    badanswer3: 'Nem, mivel kilencszer akkorák lesznek',
+    goodanswer: 'Nem, mivel ugyanakkorák maradnak a szögek'
+  }
+  },
+  {
+    question: 'Melyik állítás igaz a hasonló háromszögekre',  
+    answers:{
+    badanswer1: 'Minden oldaluk egyenlő',
+    badanswer2: 'Minden szögük egyenlő',
+    badanswer3: 'Mindegyik állítás igaz',
+    goodanswer: 'A megfelelő oldalaik aránya egyenlő'
+  }
+  },
+  {
+    question: 'Melyik geometriai transzformáció nem hoz létre hasonló alakzatokat?',  
+    answers:{
+    badanswer1: 'Forgatás',
+    badanswer2: 'Középpontos nagyítás',
+    badanswer3: 'Tükrözés',
+    goodanswer: 'Eltolás'
+  }
+  },
+  {
+    question: 'Két háromszög mikor biztosan hasonló?',
+    answers: {
+      badanswer1: 'Ha egy-egy oldaluk és a rajta fekvő szögük egyenlő',
+      badanswer2: 'Ha minden oldaluk hossza egyenlő',
+      badanswer3: 'Ha minden szögük egyenlő',
+      goodanswer: 'Ha egy-egy oldaluk és a rajta fekvő két szögük egyenlő'
+    }
+  },
+  {
+    question: 'Melyik állítás igaz a hasonló körökre?',  
+    answers:{
+    badanswer1: 'Kerületük megegyezik',
+    badanswer2: 'Mindegyik állítás igaz',
+    badanswer3: 'Területük megegyezik',
+    goodanswer: 'Sugaraik aránya megegyezik'
+  }
+  },
+  {
+    question: 'Egy épület makettje 1:100 arányban készült. Ha a makett magassága 20cm, akkor mekkora a valós magasság?',  
+    answers:{
+    badanswer1: '2cm',
+    badanswer2: '200cm',
+    badanswer3: '200m',
+    goodanswer: '20m'
+  }
+  },
+  {
+    question: 'Egy henger átmérője 6cm, magassága 8cm. Egy hasonló henger átmérője 3cm. Mekkora a kisebb henger magassága?',  
+    answers:{
+    badanswer1: 'Nem létezik ilyen henger',
+    badanswer2: '6 cm',
+    badanswer3: '2 cm',
+    goodanswer: '4 cm'
+  }
+  },
+  {
+    question: 'Két négyszög mikor hasonló?',
+    answers: {
+      badanswer1: 'Ha minden szögük és oldaluk egyenlő',
+      badanswer2: 'Ha szögeik egyenlőek, de oldalaik aránya eltérő',
+      badanswer3: 'Ha csak a szemközti szögeik egyenlőek',
+      goodanswer: 'Ha szögeik egyenlőek és oldalaik aránya is egyenlő'
+    }
+  },
+  {
+    question: 'Melyik állítás igaz a hasonló háromszögekre?',
+    answers: {
+      badanswer1: 'A szögeik és oldalaik egyenlőek',
+      badanswer2: 'Csak az oldalaik aránya egyenlő',
+      badanswer3: 'Csak a szögeik aránya egyenlő',
+      goodanswer: 'A szögeik egyenlőek és az oldalaik aránya is egyenlő'
+    }
+  },
+  {
+    question: 'Két trapéz mikor hasonló?',
+    answers: {
+      badanswer1: 'Ha a szomszédos oldalaik aránya megegyezik',
+      badanswer2: 'Ha minden oldalhosszuk és szögük egyenlő',
+      badanswer3: 'Ha az átlóik aránya egyenlő',
+      goodanswer: 'Ha a párhuzamos oldalaik aránya és a szögeik egyenlőek'
+    }
+  },
+  {
+    question: 'Egy téglalap egyik oldala 8cm, a másik 5cm. Egy hasonló kisebb téglalap egyik oldala 4cm. Hány cm a másik oldala?',  
+    answers:{
+    badanswer1: 'ugyanakkora mint a nagyobbik téglalapnak',
+    badanswer2: '1.5cm',
+    badanswer3: '3cm',
+    goodanswer: '2,5cm'
+  }
+  }
+
+]
+let cards2 = [
+  {
+    question: `Bármely két derékszögű háromszög hasonló.`,  
+    answers:{
+    badanswer1: 'Igaz',
+    badanswer2: 'Tanár úr majd megoldja',
+    badanswer3: 'Nem létezik két hasonló háromszög',
+    goodanswer: 'Hamis'
+  }
+  },
+  {
+    question: 'Bármely két szabályos hatszög hasonló',  
+    answers:{
+    badanswer1: 'Csak akkor hogyha szögük nagysága egyenlő',
+    badanswer2: 'Soha',
+    badanswer3: 'Csak akkor hogyha oldaluk hossza egyenlő',
+    goodanswer: 'Mindig'
+  }
+  },
+  {
+    question: 'Két négyszög hasonló, ha szögeik páronként egyenlőek.',  
+    answers:{
+    badanswer1: 'Igaz',
+    badanswer2: 'Nem létezik két hasonló négyszög',
+    badanswer3: 'Ötletem sincs',
+    goodanswer: 'Csak akkor hogyha ugyanolyan négyszögről beszélünk'
+  }
+  },
+  {
+    question: 'Bármely két kör hasonló',  
+    answers:{
+    badanswer1: 'Hamis',
+    badanswer2: 'Kövi kérdés',
+    badanswer3: 'Csak hogyha szögeik is megegyeznek',
+    goodanswer: 'Igaz'
+  }
+  },
+  {
+    question: 'Melyik feltételnél nem lesz hasonló két háromszög?',  
+    answers:{
+    badanswer1: 'oldalaik hossza páronként egyenlő',
+    badanswer2: 'egy-egy oldaluk hossza és a rajtuk fekvő két szögük páronként egyenlő',
+    badanswer3: 'két-két oldaluk hossza páronként egyenlő, és általuk bezárt szögek egyenlők',
+    goodanswer: 'egy-egy szöge páronként egyenlő'
+  }
+  },
+  {
+    question: 'Mekkora egy derékszögű háromszög átfogója, ha befogói: 3 és 4',  
+    answers:{
+    badanswer1: '4,54',
+    badanswer2: '6',
+    badanswer3: 'pi',
+    goodanswer: '5'
+  }
+  },
+  {
+    question: 'Ha egy négyzetet felére kicsinyítünk, a területe negyedére csökken',  
+    answers:{
+    badanswer1: 'Hamis',
+    badanswer2: 'Nem létezik matematikában kicsinyítés',
+    badanswer3: 'Nem, mivel a területe nyolcad akkora lesz',
+    goodanswer: 'Igaz'
+  }
+  },
+  {
+    question: 'Két háromszög mikor biztosan nem hasonló?',
+    answers: {
+      badanswer1: 'Ha három oldaluk hossza arányos',
+      badanswer2: 'Ha két szögük és az egyik oldaluk arányos',
+      badanswer3: 'Ha két oldaluk és a közrezárt szögük arányos',
+      goodanswer: 'Ha egy szögük és két oldaluk arányos'
+    }
+  },
+  {
+    question: 'Egy négyzet lehet hasonló egy téglalaphoz',  
+    answers:{
+    badanswer1: 'Csak akkor hogyha egy-egy szögük egyenlő nagyságú',
+    badanswer2: 'Hamis',
+    badanswer3: 'Hagyjál már ezekkel a kérdésekkel',
+    goodanswer: 'Igaz'
+  }
+  },
+  {
+    question: 'Hasonló alakzatok megfelelő szögei egyenlőek',  
+    answers:{
+    badanswer1: 'Hamis',
+    badanswer2: 'Nem, mivel csak az oldalaik egyenlőek',
+    badanswer3: 'Sigma',
+    goodanswer: 'Igaz'
+  }
+  },
+  {
+    question: 'Két kocka mikor hasonló?',
+    answers: {
+      badanswer1: 'Ha csak térfogatuk aránya megegyezik',
+      badanswer2: 'Ha csak felületük aránya megegyezik',
+      badanswer3: 'Ha csak átlóik aránya megegyezik',
+      goodanswer: 'Ha élhosszaik aránya megegyezik'
+    }
+  },
+  {
+    question: 'Ha egy háromszöget kétszeresére nagyítunk, a kerülete négyszeresére nő',  
+    answers:{
+    badanswer1: 'Igaz',
+    badanswer2: 'Nem, mivel a szögei nőnek négyszeresre',
+    badanswer3: 'Nem változik a kerülete',
+    goodanswer: 'Nem, mivel a kerülete kétszeresére nő'
+  }
+  },
+  {
+    question: 'Egy négyzet és egy téglalap minden esetben hasonló egymáshoz',  
+    answers:{
+    badanswer1: 'Igaz',
+    badanswer2: 'Akkor, hogyha kettő szögük megegyezik',
+    badanswer3: 'Soha nem hasonló egy négyzet és egy téglalap',
+    goodanswer: 'Akkor, hogyha oldalaik hossza páronként egyenlő'
+  }
+  },
+  {
+    question: 'Két hasáb mikor hasonló?',
+    answers: {
+      badanswer1: 'Ha az oldalaik megegyeznek',
+      badanswer2: 'Ha alapjuk egyenlő és magasságuk különböző',
+      badanswer3: 'Ha alapjuk különböző sokszög',
+      goodanswer: 'Ha alapjuk hasonló sokszög és magasságuk aránya is egyenlő'
+    }
+  },
+  {
+    question: 'Ha két háromszög hasonló, és az egyik egyenlőszárú, akkor a másik is az',  
+    answers:{
+    badanswer1: 'Hamis',
+    badanswer2: 'Csak akkor, hogyha az egyik szögük is megegyezik',
+    badanswer3: 'TikTok Rizz Party',
+    goodanswer: 'Igaz'
+  }
+  },
+  {
+    question: 'Ha egy négyzetet ötödére kicsínyítjük, a területe is ötödére csökken',  
+    answers:{
+    badanswer1: 'Igaz',
+    badanswer2: 'Ez csak a háromszögeknél teljesül',
+    badanswer3: 'A szögei csökkennek az ötödére',
+    goodanswer: 'Hamis'
+  }
+  },
+  {
+    question: 'Két téglalap mikor hasonló?',
+    answers: {
+      badanswer1: 'Ha minden szögük aránya egyenlő',
+      badanswer2: 'Ha csak egy-egy oldaluk hossza megegyezik',
+      badanswer3: 'Ha csak a szemközti oldalaik aránya egyenlő',
+      goodanswer: 'Ha minden oldaluk aránya egyenlő'
+    }
+  },
+  {
+    question: 'Egy derékszögű háromszög átfogója 13 cm. Mekkorák lehetnek a befogók?',  
+    answers:{
+    badanswer1: '6 és 10',
+    badanswer2: 'Nincsen neki befogói',
+    badanswer3: 'Végtelensok féle',
+    goodanswer: '5 és 12'
+  }
+  },
+  {
+    question: 'Egy egyenes és egy körív lehet hasonló',  
+    answers:{
+    badanswer1: 'Igaz',
+    badanswer2: 'Soha, kivéve pár különleges esetben',
+    badanswer3: 'Csak akkor, hogyha a kör sugara és az egyenes hossza megegyezik',
+    goodanswer: 'Hamis'
+  }
+  },
+  {
+    question: 'Két háromszög hasonló, ha két-két szögük páronként egyenlő nagyságú.',  
+    answers:{
+    badanswer1: 'Hamis',
+    badanswer2: 'Fortnite better',
+    badanswer3: 'Csak akkor, hogyha a harmadik szög 90°',
+    goodanswer: 'Igaz'
+  }
+  },
+  {
+    question: 'Ha egy háromszöget háromszorosára nagyítunk, szögei is háromszor akkorák lesznek',  
+    answers:{
+    badanswer1: 'Nem, mivel háromszor kisebbek lesznek a szögei',
+    badanswer2: 'Igaz',
+    badanswer3: 'Nem, mivel kilencszer akkorák lesznek',
+    goodanswer: 'Nem, mivel ugyanakkorák maradnak a szögek'
+  }
+  },
+  {
+    question: 'Melyik állítás igaz a hasonló háromszögekre',  
+    answers:{
+    badanswer1: 'Minden oldaluk egyenlő',
+    badanswer2: 'Minden szögük egyenlő',
+    badanswer3: 'Mindegyik állítás igaz',
+    goodanswer: 'A megfelelő oldalaik aránya egyenlő'
+  }
+  },
+  {
+    question: 'Melyik geometriai transzformáció nem hoz létre hasonló alakzatokat?',  
+    answers:{
+    badanswer1: 'Forgatás',
+    badanswer2: 'Középpontos nagyítás',
+    badanswer3: 'Tükrözés',
+    goodanswer: 'Eltolás'
+  }
+  },
+  {
+    question: 'Két háromszög mikor biztosan hasonló?',
+    answers: {
+      badanswer1: 'Ha egy-egy oldaluk és a rajta fekvő szögük egyenlő',
+      badanswer2: 'Ha minden oldaluk hossza egyenlő',
+      badanswer3: 'Ha minden szögük egyenlő',
+      goodanswer: 'Ha egy-egy oldaluk és a rajta fekvő két szögük egyenlő'
+    }
+  },
+  {
+    question: 'Melyik állítás igaz a hasonló körökre?',  
+    answers:{
+    badanswer1: 'Kerületük megegyezik',
+    badanswer2: 'Mindegyik állítás igaz',
+    badanswer3: 'Területük megegyezik',
+    goodanswer: 'Sugaraik aránya megegyezik'
+  }
+  },
+  {
+    question: 'Egy épület makettje 1:100 arányban készült. Ha a makett magassága 20cm, akkor mekkora a valós magasság?',  
+    answers:{
+    badanswer1: '2cm',
+    badanswer2: '200cm',
+    badanswer3: '200m',
+    goodanswer: '20m'
+  }
+  },
+  {
+    question: 'Egy henger átmérője 6cm, magassága 8cm. Egy hasonló henger átmérője 3cm. Mekkora a kisebb henger magassága?',  
+    answers:{
+    badanswer1: 'Nem létezik ilyen henger',
+    badanswer2: '6 cm',
+    badanswer3: '2 cm',
+    goodanswer: '4 cm'
+  }
+  },
+  {
+    question: 'Két négyszög mikor hasonló?',
+    answers: {
+      badanswer1: 'Ha minden szögük és oldaluk egyenlő',
+      badanswer2: 'Ha szögeik egyenlőek, de oldalaik aránya eltérő',
+      badanswer3: 'Ha csak a szemközti szögeik egyenlőek',
+      goodanswer: 'Ha szögeik egyenlőek és oldalaik aránya is egyenlő'
+    }
+  },
+  {
+    question: 'Melyik állítás igaz a hasonló háromszögekre?',
+    answers: {
+      badanswer1: 'A szögeik és oldalaik egyenlőek',
+      badanswer2: 'Csak az oldalaik aránya egyenlő',
+      badanswer3: 'Csak a szögeik aránya egyenlő',
+      goodanswer: 'A szögeik egyenlőek és az oldalaik aránya is egyenlő'
+    }
+  },
+  {
+    question: 'Két trapéz mikor hasonló?',
+    answers: {
+      badanswer1: 'Ha a szomszédos oldalaik aránya megegyezik',
+      badanswer2: 'Ha minden oldalhosszuk és szögük egyenlő',
+      badanswer3: 'Ha az átlóik aránya egyenlő',
+      goodanswer: 'Ha a párhuzamos oldalaik aránya és a szögeik egyenlőek'
+    }
+  },
+  {
+    question: 'Egy téglalap egyik oldala 8cm, a másik 5cm. Egy hasonló kisebb téglalap egyik oldala 4cm. Hány cm a másik oldala?',  
+    answers:{
+    badanswer1: 'ugyanakkora mint a nagyobbik téglalapnak',
+    badanswer2: '1.5cm',
+    badanswer3: '3cm',
+    goodanswer: '2,5cm'
+  }
+  }
+
+]
+
+let i = 0;
+let team = 0;
+let teams = [
+  {
+    points: 0
+  },
+  {
+    points: 0
+  },
+  {
+    points: 0
+  },
+  {
+    points: 0
+  },
+  {
+    points: 0
+  },
+  {
+    points: 0
+  },
+]
+
+function startGame(){
+  if (spinned === false){
+    $(".popup__note").text("Először pörgess")
+    if (!$(".popup").hasClass("active")) $(".popup").addClass("active");
+    setTimeout(() => {
+      $(".popup").removeClass("active")
+    }, 3000);
+  }else{
+
+  document.getElementById("cards-id").classList.remove("cards-appear")
+  document.getElementById("cards-id").classList.remove("cards")
+  document.getElementById("card-button-id").classList.remove("cards-appear")
+  document.getElementById("cards-id").classList.add("question")
+
+  let randomanswers = []
+
+  for(let a = 0; a < 4; a++){
+  let answers = cards[i].answers; 
+  let keys = Object.keys(answers);
+  let randomKey = keys[Math.floor(Math.random() * keys.length)];
+  let randomAnswer = answers[randomKey];
+  randomanswers.push([answer = randomAnswer])
+  delete cards[i].answers[randomKey]
+  }
+  
+  
+
+  document.getElementById("cards-id").innerHTML = ''
+  document.getElementById("cards-id").innerHTML  = `
+  <div class="question-text">${cards[i].question}</div>
+      <div class="questions-div">
+        <div class="questions-row">
+          <button class="question-answer" onclick="clickedAnswer(this)">${randomanswers[0]}</button>
+          <button class="question-answer" onclick="clickedAnswer(this)">${randomanswers[1]}</button>
+        </div>
+        <div class="questions-row">
+          <button class="question-answer" onclick="clickedAnswer(this)">${randomanswers[2]}</button>
+          <button class="question-answer" onclick="clickedAnswer(this)">${randomanswers[3]}</button>
+        </div>
+  `
+  
+  
+      }
+}
+
+function clickedAnswer(pressedButton){
+  if(pressedButton.innerHTML === cards2[i].answers.goodanswer){
+    resetTimer()
+    pressedButton.classList.add("good-answer")
+    $(".congratulation__note").text("HELYES VÁLASZ");
+    $(".popup").removeClass("active");
+    $(".congratulation").fadeIn();
+    addPoints()
+  } else{
+    resetTimer()
+    pressedButton.classList.add("bad-answer")
+    $(".congratulation__note").text("HELYTELEN VÁLASZ");
+    $(".popup").removeClass("active");
+    $(".congratulation").fadeIn(); 
+    minusPoints()
+  }
+}
+
+
+function addPoints(){
+  teams[team].points = teams[team].points + 10
+  if(duplapont === true){
+    teams[team].points = teams[team].points + 10
+    duplapont = false
+  }
+  let teamID = `team${team}`
+  document.getElementById(teamID).innerHTML = `${teams[team].points} pont`
+  console.log(teams)
+  setTimeout(() => {
+    $(".congratulation").fadeOut()
+  }, 1500);
+  setTimeout(() => {
+    backToCard()
+  }, 3000);
+}
+function minusPoints(){
+  teams[team].points = teams[team].points - 10
+  if(duplapont === true){
+    teams[team].points = teams[team].points - 10
+    duplapont = false
+  }
+  let teamID = `team${team}`
+  document.getElementById(teamID).innerHTML = `${teams[team].points} pont`
+  console.log(teams)
+  setTimeout(() => {
+    $(".congratulation").fadeOut()
+  }, 1500);
+  setTimeout(() => {
+    backToCard()
+  }, 3000);
+}
+
+  function timesUp(){
+  teams[team].points = teams[team].points - 15
+  let teamID = `team${team}`
+  document.getElementById(teamID).innerHTML = `${teams[team].points} pont`
+  setTimeout(() => {
+    $(".congratulation").fadeOut()
+  }, 1500);
+  setTimeout(() => {
+    backToCard()
+  }, 3000);
+  
+}
+
+function backToCard(){
+  if(i === 30){
+    let teamsArray = teams.map(teams => teams.points)
+    let winnerPoints = Math.max(...teamsArray)
+    localStorage.setItem("winnerPoints", winnerPoints)
+
+    let teamsArrayWithoutWinner = teamsArray.filter(teams => teams !== winnerPoints);
+    let secondMaxPoints = Math.max(...teamsArrayWithoutWinner);
+    localStorage.setItem("secondPoints", secondMaxPoints)
+
+
+    let teamsArrayWithoutFirstAndSecond = teamsArray.filter(teams => teams !== winnerPoints && teams !== secondMaxPoints)
+    let thirdMaxPoints = Math.max(...teamsArrayWithoutFirstAndSecond)
+    localStorage.setItem("thirdPoints", thirdMaxPoints)
+
+
+    for(let b = 0;b < 6; b++){
+      if(teams[b].points === winnerPoints){
+        let winner = document.getElementById(`csapat${b}`).value
+        localStorage.setItem(`winner${b}`, winner)
+      }else if(teams[b].points === secondMaxPoints){
+        let second = document.getElementById(`csapat${b}`).value
+        localStorage.setItem(`second${b}`, second)
+      }else if(teams[b].points === thirdMaxPoints){
+        let third = document.getElementById(`csapat${b}`).value
+        localStorage.setItem(`third${b}`, third)
+      }
+      
+
+    }
+    $(".congratulation__note").text("VÉGE A JÁTÉKNAK")
+    $(".congratulation").fadeIn(); 
+    setTimeout(() => {
+    document.location.href = "../end-page/leaderboard.html"
+    }, 4000);
+  } else {
+  i++
+  team++
+  
+  
+  if (kimarad === true && team != 6 && team != 5){
+    team++
+    document.getElementById(`csapat${team-2}`).classList.remove("playingTeam")
+    document.getElementById(`csapat${team}`).classList.add("playingTeam")
+  } else if(kimarad === true && team === 5){
+    team = 0
+    document.getElementById(`csapat4`).classList.remove("playingTeam")
+    document.getElementById(`csapat0`).classList.add("playingTeam")
+  } else if(kimarad === true && team === 6){
+    document.getElementById(`csapat5`).classList.remove("playingTeam")
+    document.getElementById(`csapat1`).classList.add("playingTeam")
+    team = 1;
+  } else {
+    if(team === 6){
+    team = 0
+    document.getElementById(`csapat5`).classList.remove("playingTeam")
+    document.getElementById(`csapat0`).classList.add("playingTeam")
+  }else{
+    document.getElementById(`csapat${team-1}`).classList.remove("playingTeam")
+    document.getElementById(`csapat${team}`).classList.add("playingTeam")
+  }
+  }
+  
+
+document.getElementById("cards-id").innerHTML = `
+<button class="card-button cards-appear" id="card-button-id" onclick="startTimer(); startGame()"><img src="pics/carddeck.jpg" alt="" class="carddeck-img"></button> 
+  <p>KÁRTYA FELHÚZÁSA</p>
+`
+document.getElementById("cards-id").classList.add("cards-appear")
+document.getElementById("cards-id").classList.add("cards")
+document.getElementById("cards-id").classList.remove("question")
+document.getElementById("card-button-id").classList.add("cards-appear")
+spinned = false;
+alreadySpinned = false;
+kimarad = false
+  }
+}
+
+
+function BONUSpluszegy(){
+  teams[team].points = teams[team].points + 3
+  let teamID = `team${team}`
+  document.getElementById(teamID).innerHTML = `${teams[team].points} pont`
+  console.log(teams)
+}
+function BONUSplusztiz(){
+  teams[team].points = teams[team].points + 10
+  let teamID = `team${team}`
+  document.getElementById(teamID).innerHTML = `${teams[team].points} pont`
+  console.log(teams)
+}
+function BONUSminusztiz(){
+  teams[team].points = teams[team].points - 10
+  let teamID = `team${team}`
+  document.getElementById(teamID).innerHTML = `${teams[team].points} pont`
+  console.log(teams)
+}
+let kimarad = false;
+let duplapont = false;
+
+function BONUSkovetkezokimarad(){
+  kimarad = true
+}
+
+function BONUSduplapont(){
+  duplapont = true
+}
+function BONUSkimaradszakorbol(){
+  team++
+  spinagain = true;
+
+  if(team === 6){
+  document.getElementById(`csapat5`).classList.remove("playingTeam")
+  document.getElementById(`csapat0`).classList.add("playingTeam")
+  team = 0;
+  }else{
+  document.getElementById(`csapat${team-1}`).classList.remove("playingTeam")
+  document.getElementById(`csapat${team}`).classList.add("playingTeam")
+  }
+}
+function BONUSporgessmegegyszer(){
+  spinagain = true
+}
+
+
+    </script>
+  </body>
+</html>
+
+
+

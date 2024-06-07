@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Wheel Spinner Game</title>
+    <link rel="stylesheet" href="../design.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  </head>
+  <body>
+    <div class="background"></div>
+    <div class="dim-overlay"></div>
+<div class="div">
+  <div class="left-side">
+    <div class="cards cards-appear" id="cards-id">
+      <button class="card-button cards-appear" id="card-button-id" onclick="startTimer(); startGame()"><img src="../pics/carddeck.jpg" alt="" class="carddeck-img"></button> 
+      <p>KÁRTYA FELHÚZÁSA</p>
+    </div>
+    <div class="groups">
+      <div class="group-left">
+        <div class="csapat">
+          <input type="text" name="" id="" class="csapatnev-input" required>
+          <label for="csapatnev-input" class="csapat-label">1. csapat</label>
+          <div class="group-point" id="team0">0 pont</div>
+        </div>
+        <div class="csapat">
+          <input type="text" name="" id="" class="csapatnev-input" required>
+          <label for="csapatnev-input" class="csapat-label">2. csapat</label>
+          <div class="group-point" id="team1">0 pont</div>
+        </div>
+        <div class="csapat">
+          <input type="text" name="" id="" class="csapatnev-input" required>
+          <label for="csapatnev-input" class="csapat-label">3. csapat</label>
+          <div class="group-point" id="team2">0 pont</div>
+        </div>
+      </div>
+
+
+      <div class="group-right">
+        <div class="csapat">
+          <input type="text" name="" id="" class="csapatnev-input" required>
+          <label for="csapatnev-input" class="csapat-label" id="">4. csapat</label>
+          <div class="group-point" id="team3">0 pont</div>
+        </div>
+        <div class="csapat">
+          <input type="text" name="" id="" class="csapatnev-input" required>
+          <label for="csapatnev-input" class="csapat-label">5. csapat</label>
+          <div class="group-point" id="team4">0 pont</div>
+        </div>
+        <div class="csapat">
+          <input type="text" name="" id="" class="csapatnev-input" required>
+          <label for="csapatnev-input" class="csapat-label">6. csapat</label>
+          <div class="group-point" id="team5">0 pont</div>
+        </div>
+      </div>
+      
+      
+    </div>
+  </div>
+  <div class="right-side">
+
+    <div class="wheel">
+      <div class="wheel__inner">
+        <div class="wheel__sec">
+          <span class="wheel-sec-span">DUPLA PONT</span>
+        </div>
+        <div class="wheel__sec">
+          <span class="wheel-sec-span2">KIMARADSZ A KÖRBŐL</span>
+        </div>
+        <div class="wheel__sec"><span class="wheel-sec-span">SEMMI</span></div>
+        <div class="wheel__sec">
+          <span class="wheel-sec-span">-10 PONT</span>
+        </div>
+        <div class="wheel__sec">
+          <span class="wheel-sec-span3">PÖRGESS MÉGEGYSZER</span>
+        </div>
+        <div class="wheel__sec">
+          <span class="wheel-sec-span2">KÖVETKEZŐ KIMARAD</span>
+        </div>
+        <div class="wheel__sec">
+          <span class="wheel-sec-span">+10 PONT</span>
+        </div>
+        <div class="wheel__sec">
+          <span class="wheel-sec-span">+1 PONT</span>
+        </div>
+      </div>  
+      <div class="wheel__arrow">
+        <button class="wheel__button">SPIN</button>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row text-center">
+        <div id="progressBar">
+          <div></div>
+        </div>
+        <div class="second-countdown">
+          <ul id="countdown">
+            <li><span id="second" class="numbers">20 másodperc</span>
+          </ul>
+        </div>
+          
+  
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="popup">
+      <div class="popup__container">
+        <div class="popup__emotion">
+          <i class="fas fa-meh"></i>
+        </div>
+        <p class="popup__note"></p>
+      </div>
+    </div>
+    <div class="congratulation">
+      <div class="congratulation__container">
+        <p class="congratulation__note">Congratulation!</p>
+      </div>
+    </div>
+  </div>
+  </div>
+    <script>
+        $(".congratulation").addClass("congratulation__start")
+        $(".congratulation").fadeIn()
+        $(".congratulation__note").text("ÜDVÖZLÜNK A JÁTÉKUNKBAN!");
+        startGameBoolean = 2
+        
+          $(".congratulation").click(function () {
+            $(".congratulation__container").addClass("congratulation__groups")
+            $(".congratulation__note").text("ITT LESZNEK A CSAPATOK:");
+            $(".groups").addClass("highlight")
+
+
+            $(".congratulation").click(function () {
+                $(".congratulation__container").removeClass("congratulation__groups")
+                $(".groups").removeClass("highlight")
+                  $(".congratulation__container").addClass("congratulation__bonuswheel")
+                  $(".congratulation__note").text("ITT LEHET PÖRGETNI BÓNUSZOKAT:");
+                  $(".wheel__inner").addClass("highlight")
+
+                $(".congratulation").click(function () {
+                    $(".congratulation__container").removeClass("congratulation__bonuswheel")
+                    $(".wheel__inner").removeClass("highlight")
+                      $(".congratulation__container").addClass("congratulation__time")
+                      $(".congratulation__note").text("ITT FOG LÁTSZÓDNI AZ IDŐ:");
+                      $(".container").addClass("highlight")
+
+                      $(".congratulation").click(function () {
+                        $(".congratulation__container").removeClass("congratulation__time")
+                        $(".container").removeClass("highlight")
+                          $(".congratulation__container").addClass("congratulation__card")
+                          $(".congratulation__note").text("ITT LEHET KÉRDÉSEKET HÚZNI:");
+                          $(".card-button").addClass("highlight")
+
+                          $(".congratulation").click(function () {
+                            $(".congratulation__container").removeClass("congratulation__card")
+                            $(".card-button").removeClass("highlight")
+                            $(".congratulation__note").text("KEZDŐDHET A JÁTÉK");
+                            
+
+                            $(".congratulation").click(function() {
+                              document.location.href = "../page.html"
+                            })
+
+                  });
+                });
+              });
+           });
+         }); 
+      
+
+    </script>
+  </body>
+</html>
+
+
+

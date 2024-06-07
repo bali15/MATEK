@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EREDMÉNYEK</title>
+    <link rel="stylesheet" href="leaderboard.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tsparticles/confetti@3.0.3/tsparticles.confetti.bundle.min.js"></script>
+  </head>
+  <body>
+    <div class="eredmenyek-text">EREDMÉNYEK</div>
+    <div class="silver" id="silver">
+      <div class="points" id="secondPoints"></div>
+      <p class="csapatnev silver-nev" id="second"></p>
+      <div class="silver-standing podiums">2.</div>
+    </div>
+    <div class="gold" id="gold">
+      <div class="points" id="winnerPoints"></div>
+      <p class="csapatnev gold-nev" id="first"></p>
+      <div class="gold-standing podiums">1.</div>
+    </div>
+    <div class="bronze" id="bronze">
+      <div class="points" id="thirdPoints"></div>
+      <p class="csapatnev bronz-nev" id="third"></p>
+      <div class="bronze-standing podiums">3.</div>
+    </div>
+  </body>
+  <script>
+    let winnerPoints = localStorage.getItem("winnerPoints");
+    let secondPoints = localStorage.getItem("secondPoints");
+    let thirdPoints = localStorage.getItem("thirdPoints");
+
+    document.getElementById("winnerPoints").innerHTML = `(${winnerPoints}pont)`;
+    document.getElementById("secondPoints").innerHTML = `(${secondPoints}pont)`;
+    document.getElementById("thirdPoints").innerHTML = `(${thirdPoints}pont)`;
+
+    $(document).ready(function () {
+      $(".eredmenyek-text").css("transform", "scale(10,10)");
+
+      for (let b = 0; b < 6; b++) {
+        if (localStorage.getItem(`winner${b}`) !== null) {
+          let winner = localStorage.getItem(`winner${b}`);
+          document.getElementById("first").innerHTML += `${winner}<br>`;
+        } else if (localStorage.getItem(`second${b}`) !== null) {
+          let second = localStorage.getItem(`second${b}`);
+          document.getElementById("second").innerHTML += `${second}<br>`;
+        } else if (localStorage.getItem(`third${b}`) !== null) {
+          let third = localStorage.getItem(`third${b}`);
+          document.getElementById("third").innerHTML += `${third}<br>`;
+        }
+      }
+
+      document.body.addEventListener("click", function () {
+        $(".bronze").css("transform", "translateY(-330px)");
+        $(".eredmenyek-text").css("transform", "translateY(-500px)");
+        document.body.addEventListener("click", function () {
+          $(".silver").css("transform", "translateY(-480px)");
+          document.body.addEventListener("click", function () {
+            $(".gold").css("transform", "translateY(-630px)");
+            localStorage.clear();
+            const end = Date.now() + 15 * 1000;
+            const colors = ["#2D9596", "#9AD0C2", "#F1FADA"];
+            (function frame() {
+              confetti({
+                particleCount: 2,
+                angle: 60,
+                spread: 55,
+                origin: { x: 0 },
+                colors: colors,
+              });
+
+              confetti({
+                particleCount: 2,
+                angle: 120,
+                spread: 55,
+                origin: { x: 1 },
+                colors: colors,
+              });
+
+              if (Date.now() < end) {
+                requestAnimationFrame(frame);
+              }
+            })();
+          });
+        });
+      });
+    });
+  </script>
+</html>
